@@ -10,8 +10,8 @@ static int SECONDS = 1000;
 
 void setup() {
   size(550, 300);
-  client = new WebsocketClient(this, "ws://unrvl2020-presence-sandbox.herokuapp.com/socket.io/?EIO=3&transport=websocket");
-  //client = new WebsocketClient(this, "wss://room.arimitb.com/socket.io/?EIO=3&transport=websocket&sid=uTBfT4rog5uu9qmdAAAT");
+  //client = new WebsocketClient(this, "ws://unrvl2020-presence-sandbox.herokuapp.com/socket.io/?EIO=3&transport=websocket");
+  client = new WebsocketClient(this, "ws://room.arimitb.com/socket.io/?EIO=3&transport=websocket");
   lastTime = millis();
 }
 
@@ -27,7 +27,6 @@ void draw() {
     x += 50;
   }
   if (millis() - lastTime > 15 * SECONDS) {
-    println("Sending keepalive message");
     client.sendMessage("2");
     lastTime = millis();
   }
@@ -53,7 +52,7 @@ void webSocketEvent(String msg) {
   msg = msg.substring(0, msg.length() - 2);
 
   // 3. Send that message to our device.
-  println(msg);
+  //println(msg);
   if (circuitPlayground != null) {
     circuitPlayground.write("LEVELS " + msg + "\n");
   }
@@ -72,4 +71,16 @@ Serial detectSerial(int baudRate) {
   }
   println("Failed to find an usb serial");
   return null;
+}
+
+String serialBuffer = "";
+
+void serialEvent(Serial p) {
+  String log = p.readString();
+  if (log.equals("\n")) {
+    println("CPX:", serialBuffer);
+    serialBuffer = "";
+  } else {
+    serialBuffer += log;
+  }
 }
