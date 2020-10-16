@@ -20,6 +20,10 @@ def listen_for_message():
     return None
 
 
+max_sound_levels = []
+for i in range(10):
+    max_sound_levels.append(0)
+
 while True:
     # Listen for a message
     message = listen_for_message()
@@ -30,8 +34,12 @@ while True:
         message = message.split(" ")[1]
         sound_levels = message.split(",")
         for i in range(10):
-            level = int(sound_levels[i])
-            cp.pixels[i] = (0, 0, level)
+            level = float(sound_levels[i])
+            max_sound_levels[i] = max(max_sound_levels[i], level)
+            cp.pixels[i] = (0, 0, int(max_sound_levels[i]))
+            #cp.pixels[i] = (0, 0, int(level))
 
+    for i in range(10):
+        max_sound_levels[i] = max(max_sound_levels[i] - 5, 0)
     cp.red_led = not cp.red_led
-    time.sleep(0.5)
+    time.sleep(0.1)

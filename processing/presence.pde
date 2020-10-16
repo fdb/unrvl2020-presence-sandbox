@@ -66,7 +66,10 @@ Serial detectSerial(int baudRate) {
   for (String port : ports) {
     if (port.contains("ACM") || port.contains("cu.usbmodem") || port.contains("tty.usbmodem")) {
       println("Connected to", port);
-      return new Serial(this, port, baudRate);
+      Serial serial = new Serial(this, port, baudRate);
+      //serial.bufferUntil(13);
+      serial.write("\03\04");
+      return serial;
     }
   }
   println("Failed to find an usb serial");
