@@ -1,15 +1,18 @@
 import processing.serial.*;
 
 import websockets.*;
-
 WebsocketClient client;
-String lastMessage = "0,0,0,0,0,0,0,0,0,0";
 
+int lastTime;
+String lastMessage = "0,0,0,0,0,0,0,0,0,0";
 Serial circuitPlayground = detectSerial(57600);
+static int SECONDS = 1000;
 
 void setup() {
   size(550, 300);
   client = new WebsocketClient(this, "ws://unrvl2020-presence-sandbox.herokuapp.com/socket.io/?EIO=3&transport=websocket");
+  //client = new WebsocketClient(this, "wss://room.arimitb.com/socket.io/?EIO=3&transport=websocket&sid=uTBfT4rog5uu9qmdAAAT");
+  lastTime = millis();
 }
 
 void draw() {
@@ -22,6 +25,11 @@ void draw() {
     noStroke();
     circle(x, 150, 40);
     x += 50;
+  }
+  if (millis() - lastTime > 15 * SECONDS) {
+    println("Sending keepalive message");
+    client.sendMessage("2");
+    lastTime = millis();
   }
 }
 
